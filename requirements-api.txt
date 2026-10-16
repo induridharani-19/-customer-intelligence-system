@@ -1,0 +1,6 @@
+# Lean dependency set for the Render API. The ML training dependencies remain
+# in requirements.txt and are only needed when running the full pipeline.
+fastapi>=0.115
+pandas>=2.2
+pydantic>=2.7
+uvicorn[standard]>=0.30

@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Customer Intelligence System — AI-Powered Retail Segmentation</title>
+    <meta name="description" content="Neural segment prediction, K-Means evaluation, cluster recommendations, and embedding visuals in one connected workspace." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <canvas id="signal-canvas" aria-hidden="true"></canvas>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="sidebar-title">CIS</span>
+          <span class="sidebar-sub">Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <div class="nav-group-label">Core</div>
+        <a href="#predictor" class="sidebar-link active" id="nav-predictor" data-view="predictor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polygon points="5 3 19 12 5 21 5 3" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <span>Predictor</span>
+          <span class="nav-badge" id="badge-predictor"></span>
+        </a>
+        <a href="#segments" class="sidebar-link" id="nav-segments" data-view="segments">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2"/><path d="M2 12h20" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Segments</span>
+        </a>
+        <div class="nav-group-label">Analytics</div>
+        <a href="#analytics" class="sidebar-link" id="nav-analytics" data-view="analytics">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Analytics</span>
+        </a>
+        <a href="#model" class="sidebar-link" id="nav-model" data-view="model">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Model</span>
+        </a>
+        <a href="#compare" class="sidebar-link" id="nav-compare" data-view="compare">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="15" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="15" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="2" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Compare</span>
+        </a>
+        <div class="nav-group-label">Tools</div>
+        <a href="#history" class="sidebar-link" id="nav-history" data-view="history">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><polyline points="12 6 12 12 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>History</span>
+          <span class="nav-badge live" id="badge-history">0</span>
+        </a>
+        <a href="#batch" class="sidebar-link" id="nav-batch" data-view="batch">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="2"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Batch</span>
+        </a>
+        <a href="#how" class="sidebar-link" id="nav-how" data-view="how">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>How it works</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-pill" id="health-pill">
+          <span class="health-dot"></span>
+          <span class="health-text">Connecting</span>
+        </div>
+        <div class="sidebar-clock" id="sidebar-clock">--:--:--</div>
+      </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="app-shell" id="app-shell">
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div class="topbar-title">
+          <span class="page-title" id="page-title">Customer Predictor</span>
+          <span class="page-breadcrumb">Customer Intelligence System</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" id="refresh-btn" title="Refresh data">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 20v-6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="icon-btn" id="export-btn" title="Export last prediction">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/><polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/></svg>
+          </button>
+          <a class="topbar-api-btn" href="/docs" target="_blank" rel="noreferrer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2"/></svg>
+            API Docs
+          </a>
+        </div>
+      </header>
+
+      <!-- KPI Rail -->
+      <section class="kpi-rail" id="kpi-rail" aria-label="Segment metrics">
+        <article class="metric-card loading" id="kpi-0"></article>
+        <article class="metric-card loading" id="kpi-1"></article>
+        <article class="metric-card loading" id="kpi-2"></article>
+        <article class="metric-card loading" id="kpi-3"></article>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════
+           PREDICTOR VIEW
+           ════════════════════════════════════════════════════════ -->
+      <div class="view-section active" id="view-predictor">
+        <section class="workspace-grid">
+          <article class="panel predictor-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Scenario Builder</p>
+                <h2>Customer profile</h2>
+              </div>
+              <div class="preset-bar" id="preset-bar">
+                <button type="button" data-segment="1" class="preset-btn">
+                  <span class="preset-dot" style="background:var(--teal)"></span>Premium
+                </button>
+                <button type="button" data-segment="0" class="preset-btn">
+                  <span class="preset-dot" style="background:var(--blue)"></span>Regular
+                </button>
+                <button type="button" data-segment="3" class="preset-btn">
+                  <span class="preset-dot" style="background:var(--gold)"></span>Dormant
+                </button>
+              </div>
+            </div>
+
+            <form id="predict-form" class="feature-form">
+              <label class="feature-control">
+                <div class="fc-label"><strong>Recency</strong><small>days since last purchase</small></div>
+                <div class="fc-slider-wrap"><input type="range" name="recency" min="0" max="500" step="1" value="34" /></div>
+                <input class="fc-number" type="number" name="recency_number" min="0" max="500" step="1" value="34" />
+              </label>
+              <label class="feature-control">
+                <div class="fc-label"><strong>Frequency</strong><small>log transaction count</small></div>
+                <div class="fc-slider-wrap"><input type="range" name="frequency" min="0" max="10" step="0.1" value="4.9" /></div>
+                <input class="fc-number" type="number" name="frequency_number" min="0" max="10" step="0.1" value="4.9" />
+              </label>
+              <label class="feature-control">
+                <div class="fc-label"><strong>Monetary</strong><small>log customer value</small></div>
+                <div class="fc-slider-wrap"><input type="range" name="monetary_value" min="0" max="15" step="0.1" value="7.9" /></div>
+                <input class="fc-number" type="number" name="monetary_value_number" min="0" max="15" step="0.1" value="7.9" />
+              </label>
+              <label class="feature-control">
+                <div class="fc-label"><strong>Quantity</strong><small>log item volume</small></div>
+                <div class="fc-slider-wrap"><input type="range" name="total_quantity" min="0" max="15" step="0.1" value="7.4" /></div>
+                <input class="fc-number" type="number" name="total_quantity_number" min="0" max="15" step="0.1" value="7.4" />
+              </label>
+              <label class="feature-control">
+                <div class="fc-label"><strong>Avg Price</strong><small>mean unit price</small></div>
+                <div class="fc-slider-wrap"><input type="range" name="avg_unit_price" min="0" max="3000" step="0.1" value="3.5" /></div>
+                <input class="fc-number" type="number" name="avg_unit_price_number" min="0" max="3000" step="0.1" value="3.5" />
+              </label>
+
+              <div class="form-footer">
+                <button class="primary-button" type="submit" id="run-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>
+                  Run Model
+                  <kbd>↵</kbd>
+                </button>
+                <div class="form-meta">
+                  <span class="save-state" id="save-state">Ready</span>
+                  <span class="auto-run-badge">Auto</span>
+                </div>
+              </div>
+            </form>
+          </article>
+
+          <article class="panel result-panel" id="result-panel">
+            <div class="result-header">
+              <div>
+                <p class="eyebrow" id="model-status">Awaiting model</p>
+                <h2 id="cluster-name">Ready to classify</h2>
+              </div>
+              <div class="cluster-chip" id="cluster-chip">
+                <span>Cluster</span>
+                <strong id="cluster-id">--</strong>
+              </div>
+            </div>
+
+            <!-- Customer Score Gauge (NEW) -->
+            <div class="score-gauge-wrap" id="score-gauge-wrap">
+              <div class="score-gauge-ring" id="score-gauge-ring">
+                <svg class="gauge-svg" viewBox="0 0 120 120">
+                  <circle class="gauge-track" cx="60" cy="60" r="50" />
+                  <circle class="gauge-fill" id="gauge-fill" cx="60" cy="60" r="50"
+                    stroke-dasharray="0 314" stroke-dashoffset="78.5" />
+                </svg>
+                <div class="gauge-center">
+                  <span class="gauge-label">Score</span>
+                  <strong class="gauge-value" id="gauge-value">--</strong>
+                </div>
+              </div>
+              <div class="gauge-meta">
+                <p class="eyebrow" id="confidence-label-new">Confidence</p>
+                <strong class="gauge-conf" id="confidence-score">--</strong>
+                <p class="gauge-hint" id="segment-tier">—</p>
+              </div>
+            </div>
+
+            <div class="confidence-stage">
+              <canvas id="confidence-canvas" aria-label="Prediction confidence"></canvas>
+              <div class="confidence-center">
+                <span>Breakdown</span>
+              </div>
+            </div>
+
+            <p class="result-summary" id="summary">Run the model to generate a segment summary and business action.</p>
+
+            <div class="action-strip">
+              <div class="action-strip-header">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Recommended action</span>
+              </div>
+              <strong id="business-action">Waiting for prediction.</strong>
+            </div>
+
+            <div class="probability-section">
+              <h3 class="prob-title">Cluster probabilities</h3>
+              <div class="probability-bars" id="probability-bars"></div>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════
+           SEGMENTS VIEW
+           ════════════════════════════════════════════════════════ -->
+      <div class="view-section" id="view-segments">
+        <section class="insight-grid">
+          <article class="panel segment-panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">Segment Landscape</p><h2>Customer groups</h2></div>
+              <input type="search" placeholder="Filter segments…" id="segment-search" class="search-input" />
+            </div>
+            <div class="segment-list" id="segment-list"></div>
+          </article>
+
+          <div class="segments-right-col">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="eyebrow">Embedding View</p><h2>Learned customer space</h2></div>
+                <button class="icon-btn" id="reload-embedding-btn" title="Reload plot">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.51 15a9 9 0 1 0 .49-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+              <div class="embedding-frame">
+                <img id="embedding-plot" alt="t-SNE visualization" hidden />
+                <div class="embedding-placeholder" id="embedding-empty">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" opacity="0.3"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M8 12s1-3 4-3 4 3 4 3-1 3-4 3-4-3-4-3z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+                  <p>Embedding visualization not yet generated.</p>
+                  <small>Run the analytics pipeline or the generate_tsne.py script.</small>
+                </div>
+              </div>
+            </article>
+
+            <!-- Segment distribution donut (NEW) -->
+            <article class="panel">
+              <div class="panel-heading">
+                <div><p class="eyebrow">Distribution</p><h2>Segment share</h2></div>
+              </div>
+              <div class="donut-wrap">
+                <canvas id="donut-canvas" aria-label="Segment share donut chart"></canvas>
+                <div class="donut-legend" id="donut-legend"></div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════
+           ANALYTICS VIEW
+           ════════════════════════════════════════════════════════ -->
+      <div class="view-section" id="view-analytics">
+        <section class="analytics-grid">
+          <article class="panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">Feature Distribution</p><h2>Segment radar</h2></div>
+              <div class="legend-wrap" id="radar-legend"></div>
+            </div>
+            <div class="radar-wrap"><canvas id="radar-canvas"></canvas></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">Monetary Value</p><h2>Revenue bands</h2></div>
+            </div>
+            <div class="chart-wrap-sm">
+              <canvas id="revenue-canvas"></canvas>
+              <p class="empty-state" id="revenue-empty" hidden>No segment data yet.</p>
+            </div>
+          </article>
+
+          <article class="panel span-full">
+            <div class="panel-heading">
+              <div><p class="eyebrow">RFM Heatmap</p><h2>Customer engagement matrix</h2></div>
+              <div class="heatmap-scale">
+                <span>Low</span>
+                <div class="heatmap-gradient"></div>
+                <span>High</span>
+              </div>
+            </div>
+            <div class="heatmap-wrap" id="heatmap-wrap"></div>
+          </article>
+
+          <!-- NEW: Scatter matrix feature -->
+          <article class="panel span-full">
+            <div class="panel-heading">
+              <div><p class="eyebrow">Scatter Plot</p><h2>Recency vs Frequency by segment</h2></div>
+              <div class="legend-wrap" id="scatter-legend"></div>
+            </div>
+            <div class="scatter-wrap">
+              <canvas id="scatter-canvas" aria-label="Scatter plot"></canvas>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════
+           MODEL VIEW
+           ════════════════════════════════════════════════════════ -->
+      <div class="view-section" id="view-model">
+        <section class="model-layout">
+          <article class="panel model-panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">Model Evaluation</p><h2>K-Means elbow & silhouette</h2></div>
+              <div class="chart-legend">
+                <span class="legend-bar">Inertia</span>
+                <span class="legend-line">Silhouette</span>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="metrics-chart"></canvas>
+              <p class="empty-state" id="metrics-empty" hidden>Run the analytics pipeline first.</p>
+            </div>
+          </article>
+
+          <div class="model-sidebar">
+            <article class="panel">
+              <div class="panel-heading"><div><p class="eyebrow">Artifacts</p><h2>System inventory</h2></div></div>
+              <div class="artifact-list" id="artifact-list">
+                <div class="artifact-row loading-row"><span>Scanning…</span></div>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-heading"><div><p class="eyebrow">Best Configuration</p><h2>Optimal K</h2></div></div>
+              <div class="optimal-display">
+                <div class="optimal-k-box"><span>Best K</span><strong id="optimal-k-display">--</strong></div>
+                <div class="optimal-score-box"><span>Silhouette</span><strong id="optimal-score-display">--</strong></div>
+              </div>
+              <p class="optimal-note" id="optimal-note">Run the pipeline to compute K-Means metrics.</p>
+            </article>
+
+            <!-- NEW: K selector tool -->
+            <article class="panel">
+              <div class="panel-heading"><div><p class="eyebrow">Interactive</p><h2>K explorer</h2></div></div>
+              <div class="k-explorer">
+                <label class="k-label">Try K = <strong id="k-display">4</strong></label>
+                <input type="range" id="k-slider" min="2" max="10" step="1" value="4" />
+                <div class="k-stats" id="k-stats"></div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════
+           COMPARE VIEW
+           ════════════════════════════════════════════════════════ -->
+      <div class="view-section" id="view-compare">
+        <section class="compare-grid">
+          <article class="panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">Customer A</p><h2>Profile Alpha</h2></div>
+              <button class="icon-btn" id="preset-a-btn" title="Random preset">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/><path d="M3.51 15a9 9 0 1 0 .49-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <form id="compare-form-a" class="compare-form">
+              <div class="compare-inputs" id="compare-inputs-a"></div>
+              <button class="primary-button compare-run" type="submit">Analyse A</button>
+            </form>
+          </article>
+
+          <article class="panel compare-result-panel">
+            <div class="compare-vs">
+              <div class="vs-side" id="vs-a">
+                <p class="eyebrow">Profile A</p>
+                <div class="vs-cluster-badge" id="vs-a-badge">--</div>
+                <p class="vs-name" id="vs-a-name">—</p>
+                <p class="vs-conf" id="vs-a-conf">—</p>
+              </div>
+              <div class="vs-divider">VS</div>
+              <div class="vs-side" id="vs-b">
+                <p class="eyebrow">Profile B</p>
+                <div class="vs-cluster-badge" id="vs-b-badge">--</div>
+                <p class="vs-name" id="vs-b-name">—</p>
+                <p class="vs-conf" id="vs-b-conf">—</p>
+              </div>
+            </div>
+            <canvas id="compare-canvas" aria-label="Comparison bars"></canvas>
+            <p class="compare-insight" id="compare-insight">Fill in both profiles to compare segment assignments.</p>
+
+            <!-- NEW: Action recommendations side-by-side -->
+            <div class="compare-actions" id="compare-actions" hidden>
+              <div class="cmp-action-card" id="cmp-action-a">
+                <p class="eyebrow">Action for A</p>
+                <p id="cmp-action-a-text">—</p>
+              </div>
+              <div class="cmp-action-card" id="cmp-action-b">
+                <p class="eyebrow">Action for B</p>
+                <p id="cmp-action-b-text">—</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">Customer B</p><h2>Profile Beta</h2></div>
+              <button class="icon-btn" id="preset-b-btn" title="Random preset">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6" stroke="currentColor" stroke-width="2"/><path d="M3.51 15a9 9 0 1 0 .49-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <form id="compare-form-b" class="compare-form">
+              <div class="compare-inputs" id="compare-inputs-b"></div>
+              <button class="primary-button compare-run" type="submit">Analyse B</button>
+            </form>
+          </article>
+        </section>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════
+           HISTORY VIEW (NEW)
+           ════════════════════════════════════════════════════════ -->
+      <div class="view-section" id="view-history">
+        <section class="history-layout">
+          <article class="panel" style="grid-column:1/-1">
+            <div class="panel-heading">
+              <div><p class="eyebrow">Session Log</p><h2>Prediction history</h2></div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button class="icon-btn" id="export-history-btn" title="Export history as CSV">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/><polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/></svg>
+                </button>
+                <button class="icon-btn danger-btn" id="clear-history-btn" title="Clear history">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="2"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="history-table-wrap">
+              <table class="history-table" id="history-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Time</th>
+                    <th>Recency</th>
+                    <th>Frequency</th>
+                    <th>Monetary</th>
+                    <th>Quantity</th>
+                    <th>Avg Price</th>
+                    <th>Segment</th>
+                    <th>Confidence</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="history-tbody">
+                  <tr class="history-empty-row"><td colspan="10">No predictions yet. Use the Predictor tab.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <!-- History mini-chart -->
+          <article class="panel span-full">
+            <div class="panel-heading"><div><p class="eyebrow">Trend</p><h2>Segment assignment over time</h2></div></div>
+            <canvas id="history-chart" style="width:100%;height:200px"></canvas>
+          </article>
+        </section>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════
+           BATCH VIEW (NEW)
+           ════════════════════════════════════════════════════════ -->
+      <div class="view-section" id="view-batch">
+        <section class="batch-layout">
+          <article class="panel">
+            <div class="panel-heading"><div><p class="eyebrow">Bulk Prediction</p><h2>Batch processor</h2></div></div>
+
+            <div class="batch-upload-zone" id="batch-drop-zone">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" opacity="0.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.5"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.5"/></svg>
+              <p>Drop a CSV file here, or click to browse</p>
+              <small>Columns: recency, frequency, monetary_value, total_quantity, avg_unit_price</small>
+              <input type="file" id="batch-file-input" accept=".csv" hidden />
+            </div>
+
+            <div class="batch-manual">
+              <p class="eyebrow" style="margin-bottom:10px">Or enter values manually (one row per line, comma-separated)</p>
+              <textarea id="batch-textarea" class="batch-textarea" placeholder="34,4.9,7.9,7.4,3.5&#10;248,2.6,5.5,4.7,6.2&#10;56,3.3,6.1,5.5,3.3" rows="5"></textarea>
+            </div>
+
+            <div class="batch-footer">
+              <button class="primary-button" id="batch-run-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>
+                Run Batch
+              </button>
+              <button class="secondary-button" id="batch-download-btn" disabled>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/><polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2"/></svg>
+                Download Results
+              </button>
+            </div>
+
+            <div class="batch-progress" id="batch-progress" hidden>
+              <div class="batch-progress-bar" id="batch-progress-bar"></div>
+              <span id="batch-progress-text">0 / 0</span>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading"><div><p class="eyebrow">Batch Results</p><h2>Classification output</h2></div></div>
+            <div class="batch-results-wrap">
+              <div class="batch-results-empty" id="batch-results-empty">
+                <p>Results will appear here after running the batch.</p>
+              </div>
+              <table class="history-table" id="batch-results-table" hidden>
+                <thead>
+                  <tr>
+                    <th>Row</th><th>Recency</th><th>Frequency</th><th>Monetary</th><th>Quantity</th><th>Avg Price</th><th>Segment</th><th>Confidence</th>
+                  </tr>
+                </thead>
+                <tbody id="batch-results-tbody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════
+           HOW IT WORKS VIEW (NEW)
+           ════════════════════════════════════════════════════════ -->
+      <div class="view-section" id="view-how">
+        <section class="how-layout">
+          <article class="panel how-hero">
+            <div class="how-hero-inner">
+              <p class="eyebrow">System Architecture</p>
+              <h2>How the Customer Intelligence System works</h2>
+              <p class="how-sub">A complete ML pipeline from raw transaction data to actionable segment recommendations — built with Python, scikit-learn, TensorFlow, and FastAPI.</p>
+            </div>
+          </article>
+
+          <!-- Pipeline flow diagram -->
+          <article class="panel span-full">
+            <div class="panel-heading"><div><p class="eyebrow">Data Pipeline</p><h2>End-to-end flow</h2></div></div>
+            <div class="pipeline-flow" id="pipeline-flow">
+              <div class="pipe-step" style="--c:var(--teal)">
+                <div class="pipe-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2"/><polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="2"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="pipe-content">
+                  <h4>1. Data Ingestion</h4>
+                  <p>UCI Online Retail dataset (541,909 transactions) is downloaded and cached locally. Each record has Invoice, StockCode, Description, Quantity, InvoiceDate, UnitPrice, CustomerID, Country.</p>
+                </div>
+              </div>
+              <div class="pipe-arrow">→</div>
+              <div class="pipe-step" style="--c:var(--blue)">
+                <div class="pipe-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="pipe-content">
+                  <h4>2. Preprocessing</h4>
+                  <p>Remove nulls, filter valid CustomerIDs, drop negative quantities (returns), parse dates. Resulting in ~4,338 clean customers.</p>
+                </div>
+              </div>
+              <div class="pipe-arrow">→</div>
+              <div class="pipe-step" style="--c:var(--violet)">
+                <div class="pipe-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="pipe-content">
+                  <h4>3. Feature Engineering</h4>
+                  <p>Build RFM + features per customer: <strong>Recency</strong> (days since last order), <strong>Frequency</strong> (log transaction count), <strong>MonetaryValue</strong> (log total spend), <strong>TotalQuantity</strong> (log items bought), <strong>AvgUnitPrice</strong> (mean product price).</p>
+                </div>
+              </div>
+              <div class="pipe-arrow">→</div>
+              <div class="pipe-step" style="--c:var(--coral)">
+                <div class="pipe-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 12s1-3 4-3 4 3 4 3-1 3-4 3-4-3-4-3z" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="pipe-content">
+                  <h4>4. K-Means Clustering</h4>
+                  <p>K-Means evaluated for K=2…10 using <strong>Inertia</strong> (elbow method) and <strong>Silhouette Score</strong>. Optimal K=4 selected (score=0.356). Customers assigned to 4 behavioural segments.</p>
+                </div>
+              </div>
+              <div class="pipe-arrow">→</div>
+              <div class="pipe-step" style="--c:var(--gold)">
+                <div class="pipe-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="pipe-content">
+                  <h4>5. Neural Network</h4>
+                  <p>A small TensorFlow/Keras classifier trained on cluster labels: 5-dim input → Dense(64, ReLU) → <em>customer_embedding</em>(32) → Dense(16) → Softmax(4). Learns compact customer representations.</p>
+                </div>
+              </div>
+              <div class="pipe-arrow">→</div>
+              <div class="pipe-step" style="--c:var(--green)">
+                <div class="pipe-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="pipe-content">
+                  <h4>6. API + Dashboard</h4>
+                  <p>FastAPI serves real-time predictions at <code>/api/predict</code>. This dashboard calls it live — every slider change triggers inference within ~400 ms via debounced auto-predict.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Feature explanations -->
+          <article class="panel">
+            <div class="panel-heading"><div><p class="eyebrow">Input Features</p><h2>What the 5 sliders mean</h2></div></div>
+            <div class="feature-explainer">
+              <div class="feat-exp-row">
+                <div class="feat-exp-pill" style="background:var(--teal-dim);color:var(--teal)">R</div>
+                <div><strong>Recency</strong><p>How many days ago the customer last made a purchase. Lower = more recent = higher engagement. Range: 0–500 days.</p></div>
+              </div>
+              <div class="feat-exp-row">
+                <div class="feat-exp-pill" style="background:var(--blue-dim);color:var(--blue)">F</div>
+                <div><strong>Frequency</strong><p>Log-transformed count of total transactions. Higher = loyal repeat buyer. Range: 0–10 (log scale, so 4.9 ≈ 134 transactions).</p></div>
+              </div>
+              <div class="feat-exp-row">
+                <div class="feat-exp-pill" style="background:var(--violet-dim);color:var(--violet)">M</div>
+                <div><strong>Monetary Value</strong><p>Log-transformed total spend. Higher = more valuable customer. Range: 0–15 (log scale, so 7.9 ≈ £2,697).</p></div>
+              </div>
+              <div class="feat-exp-row">
+                <div class="feat-exp-pill" style="background:var(--coral-dim);color:var(--coral)">Q</div>
+                <div><strong>Total Quantity</strong><p>Log-transformed count of total items purchased. Distinguishes bulk buyers from premium buyers.</p></div>
+              </div>
+              <div class="feat-exp-row">
+                <div class="feat-exp-pill" style="background:var(--gold-dim);color:var(--gold)">P</div>
+                <div><strong>Avg Unit Price</strong><p>Mean price per item across all their orders. High values indicate premium/luxury shoppers. Cluster 2 centroid is £2,033.</p></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Segment guide -->
+          <article class="panel">
+            <div class="panel-heading"><div><p class="eyebrow">Segments</p><h2>What each cluster means</h2></div></div>
+            <div class="segment-guide" id="segment-guide">
+              <div class="seg-guide-card" style="--c:var(--teal)">
+                <div class="seg-guide-id">0</div>
+                <div>
+                  <strong>Regular Buyers</strong>
+                  <p>Moderate recency, medium frequency &amp; spend. Core customer base. Strategy: upsell and increase basket size.</p>
+                </div>
+              </div>
+              <div class="seg-guide-card" style="--c:var(--blue)">
+                <div class="seg-guide-id">1</div>
+                <div>
+                  <strong>Premium Customers</strong>
+                  <p>Low recency (very recent), high frequency, highest monetary value. Your best customers. Strategy: loyalty perks, early access.</p>
+                </div>
+              </div>
+              <div class="seg-guide-card" style="--c:var(--violet)">
+                <div class="seg-guide-id">2</div>
+                <div>
+                  <strong>High-Value Niche</strong>
+                  <p>Infrequent buyers (low frequency) but extremely high avg unit price (£2,033). Luxury shoppers. Strategy: personalised boutique service.</p>
+                </div>
+              </div>
+              <div class="seg-guide-card" style="--c:var(--gold)">
+                <div class="seg-guide-id">3</div>
+                <div>
+                  <strong>Dormant / At-Risk</strong>
+                  <p>High recency (248+ days ago), low frequency. At risk of churn. Strategy: reactivation campaigns, win-back offers.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Tech stack -->
+          <article class="panel span-full">
+            <div class="panel-heading"><div><p class="eyebrow">Technology</p><h2>Tech stack</h2></div></div>
+            <div class="tech-grid">
+              <div class="tech-card"><div class="tech-logo">🐍</div><strong>Python 3.11</strong><p>Core language</p></div>
+              <div class="tech-card"><div class="tech-logo">⚡</div><strong>FastAPI</strong><p>REST API server</p></div>
+              <div class="tech-card"><div class="tech-logo">🧠</div><strong>TensorFlow/Keras</strong><p>Neural classifier</p></div>
+              <div class="tech-card"><div class="tech-logo">🔬</div><strong>scikit-learn</strong><p>K-Means + t-SNE</p></div>
+              <div class="tech-card"><div class="tech-logo">🐼</div><strong>pandas + NumPy</strong><p>Data processing</p></div>
+              <div class="tech-card"><div class="tech-logo">📊</div><strong>matplotlib</strong><p>Plot generation</p></div>
+              <div class="tech-card"><div class="tech-logo">🌐</div><strong>Vanilla JS</strong><p>Dashboard canvas UI</p></div>
+              <div class="tech-card"><div class="tech-logo">🗄️</div><strong>UCI ML Repo</strong><p>Online Retail dataset</p></div>
+            </div>
+          </article>
+        </section>
+      </div>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
